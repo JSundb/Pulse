@@ -106,6 +106,53 @@ npm run build
 
 The built files will be in the `build/` directory.
 
+## Deployment
+
+### GitHub Pages
+
+The app is configured to deploy automatically to GitHub Pages using GitHub Actions.
+
+#### Setup Instructions:
+
+1. **Enable GitHub Pages**:
+   - Go to your repository on GitHub
+   - Navigate to **Settings** → **Pages**
+   - Under **Source**, select **GitHub Actions**
+
+2. **Configure Repository Name** (if needed):
+   - If your repository name is different from "Pulse", update the `base` path in `vite.config.ts`
+   - Change `/Pulse/` to `/{your-repo-name}/`
+
+3. **Set Environment Variables** (optional):
+   - Go to **Settings** → **Secrets and variables** → **Actions**
+   - Add `VITE_API_URL` secret if your backend is hosted elsewhere
+   - Format: `https://your-backend-url.com/api`
+
+4. **Deploy**:
+   - Push to `main` or `master` branch
+   - The GitHub Action will automatically build and deploy your app
+   - Your app will be available at `https://{username}.github.io/Pulse/`
+
+#### Manual Deployment:
+
+```bash
+# Build for GitHub Pages
+GITHUB_PAGES=true npm run build
+
+# The build output will be in the build/ directory
+```
+
+### Backend Deployment
+
+The backend server (`server/index.js`) needs to be deployed separately. Recommended hosting options:
+
+- **Railway**: Easy Node.js deployment
+- **Render**: Free tier available
+- **Vercel**: Serverless functions
+- **Heroku**: Traditional hosting
+
+After deploying the backend, update the `VITE_API_URL` secret in GitHub Actions with your backend URL.
+
 ## Hackathon Presentation Tips
 
 1. **Start the app**: Run `npm run dev:all` before your presentation
