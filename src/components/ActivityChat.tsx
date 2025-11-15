@@ -1,16 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Send, Image as ImageIcon } from 'lucide-react';
-import type { Activity } from '../App';
-
-type ChatMessage = {
-  id: string;
-  userId: string;
-  userName: string;
-  userAvatar: string;
-  message: string;
-  timestamp: string;
-  image?: string;
-};
+import { api } from '../services/api';
+import type { Activity, ChatMessage } from '../types';
 
 type Props = {
   activity: Activity;
@@ -19,66 +10,37 @@ type Props = {
 
 export default function ActivityChat({ activity, onBack }: Props) {
   const [message, setMessage] = useState('');
-  
-  // Mock messages - in real app would come from backend
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: '1',
-      userId: 'user1',
-      userName: 'Sarah Chen',
-      userAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-      message: 'Hey! Planning to go this weekend, anyone interested?',
-      timestamp: '10:30 AM',
-    },
-    {
-      id: '2',
-      userId: 'user2',
-      userName: 'Alex Martinez',
-      userAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
-      message: 'I\'m down! What time were you thinking?',
-      timestamp: '10:45 AM',
-    },
-    {
-      id: '3',
-      userId: 'user1',
-      userName: 'Sarah Chen',
-      userAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-      message: 'Around 9 AM? The weather looks perfect ☀️',
-      timestamp: '10:47 AM',
-    },
-    {
-      id: '4',
-      userId: 'user3',
-      userName: 'Jordan Lee',
-      userAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan',
-      message: 'Can I join too? First time trying this!',
-      timestamp: '11:02 AM',
-    },
-    {
-      id: '5',
-      userId: 'user2',
-      userName: 'Alex Martinez',
-      userAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
-      message: 'Of course! We can meet at the entrance',
-      timestamp: '11:15 AM',
-    },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSend = () => {
+  useEffect(() => {
+    api.getActivityMessages(activity.id).then(data => {
+      setMessages(data);
+      setLoading(false);
+    }).catch(() => {
+      setLoading(false);
+    });
+  }, [activity.id]);
+
+  const handleSend = async () => {
     if (!message.trim()) return;
 
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
-      userId: 'current-user',
-      userName: 'You',
-      userAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=currentuser',
-      message: message.trim(),
-      timestamp: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-    };
-
-    setMessages([...messages, newMessage]);
-    setMessage('');
+    try {
+      const newMessage = await api.sendMessage(activity.id, message.trim());
+      setMessages([...messages, newMessage]);
+      setMessage('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-gray-500">Loading messages...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full w-full flex-col bg-gray-50">
@@ -106,7 +68,7 @@ export default function ActivityChat({ activity, onBack }: Props) {
       <div className="flex-1 overflow-y-auto p-4">
         <div className="space-y-4">
           {messages.map((msg) => {
-            const isCurrentUser = msg.userId === 'current-user';
+            const isCurrentUser = msg.userId === 'current-user' || msg.userName === 'You';
             
             return (
               <div key={msg.id} className={`flex gap-3 ${isCurrentUser ? 'flex-row-reverse' : ''}`}>

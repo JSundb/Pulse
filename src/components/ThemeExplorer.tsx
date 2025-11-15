@@ -1,12 +1,7 @@
+import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
-
-type Theme = {
-  id: string;
-  name: string;
-  shortDescription: string;
-  image: string;
-  gradient: string;
-};
+import { api } from '../services/api';
+import type { Theme } from '../types';
 
 type Props = {
   onSelectTheme: (themeId: string) => void;
@@ -14,71 +9,25 @@ type Props = {
 };
 
 export default function ThemeExplorer({ onSelectTheme, onOpenSearch }: Props) {
-  const themes: Theme[] = [
-    {
-      id: 'nature',
-      name: 'Nature',
-      shortDescription: 'Outdoors & Parks',
-      image: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=600',
-      gradient: 'from-green-400 to-emerald-600',
-    },
-    {
-      id: 'sport',
-      name: 'Sport',
-      shortDescription: 'Fitness & Activity',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600',
-      gradient: 'from-orange-400 to-red-600',
-    },
-    {
-      id: 'photography',
-      name: 'Photography',
-      shortDescription: 'Viewpoints & Shots',
-      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600',
-      gradient: 'from-purple-400 to-pink-600',
-    },
-    {
-      id: 'cafes',
-      name: 'Cafés & Study',
-      shortDescription: 'Coffee & Work',
-      image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600',
-      gradient: 'from-amber-400 to-orange-600',
-    },
-    {
-      id: 'social',
-      name: 'Social',
-      shortDescription: 'Meetups & Events',
-      image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600',
-      gradient: 'from-blue-400 to-cyan-600',
-    },
-    {
-      id: 'water',
-      name: 'Water & Swim',
-      shortDescription: 'Lakes & Beaches',
-      image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600',
-      gradient: 'from-cyan-400 to-blue-600',
-    },
-    {
-      id: 'routes',
-      name: 'Routes & Hikes',
-      shortDescription: 'Trails & Walks',
-      image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=600',
-      gradient: 'from-teal-400 to-green-600',
-    },
-    {
-      id: 'seasonal',
-      name: 'Seasonal',
-      shortDescription: 'Limited Time',
-      image: 'https://images.unsplash.com/photo-1476820865390-c52aeebb9891?w=600',
-      gradient: 'from-rose-400 to-pink-600',
-    },
-    {
-      id: 'hidden',
-      name: 'Hidden Gems',
-      shortDescription: 'Off the Beaten Path',
-      image: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=600',
-      gradient: 'from-indigo-400 to-purple-600',
-    },
-  ];
+  const [themes, setThemes] = useState<Theme[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.getThemes().then(data => {
+      setThemes(data);
+      setLoading(false);
+    }).catch(() => {
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-gray-500">Loading themes...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full flex-col bg-white">

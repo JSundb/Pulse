@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Home, Heart, MapPin, User, MessageCircle } from 'lucide-react';
 import OnboardingSimple from './components/OnboardingSimple';
 import ThemeExplorer from './components/ThemeExplorer';
@@ -11,7 +11,8 @@ import EditProfile from './components/EditProfile';
 import MessagesTab from './components/MessagesTab';
 import ActivityChat from './components/ActivityChat';
 import ActivityDetailsSimple from './components/ActivityDetailsSimple';
-import type { Activity } from './App';
+import { api } from './services/api';
+import type { Activity, User } from './types';
 
 export default function App() {
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
@@ -23,8 +24,7 @@ export default function App() {
   const [viewingActivity, setViewingActivity] = useState<Activity | null>(null);
   const [showActivityChat, setShowActivityChat] = useState<{ activityId: string; activityName: string; spotName: string } | null>(null);
 
-  // Mock current user profile
-  const currentUser = {
+  const [currentUser, setCurrentUser] = useState<User>({
     id: 'user1',
     name: 'Jordan Smith',
     avatar: 'https://i.pravatar.cc/150?u=jordan',
@@ -38,7 +38,13 @@ export default function App() {
       activities: 12,
       threads: 8,
     },
-  };
+  });
+
+  useEffect(() => {
+    api.getCurrentUser().then(setCurrentUser).catch(() => {
+      // Use default user if API fails
+    });
+  }, []);
 
   // Onboarding
   if (!hasCompletedOnboarding) {
@@ -80,13 +86,15 @@ export default function App() {
           <ActivityDetailsSimple
             activity={viewingActivity}
             onBack={() => setViewingActivity(null)}
-            onSave={() => {
-              // Handle save logic
-              console.log('Saved activity');
+            onSave={async () => {
+              if (viewingActivity) {
+                await api.saveActivity(viewingActivity.id);
+              }
             }}
-            onJoin={() => {
-              // Handle join logic
-              console.log('Joined activity');
+            onJoin={async () => {
+              if (viewingActivity) {
+                await api.saveActivity(viewingActivity.id);
+              }
             }}
           />
         )}
@@ -134,37 +142,42 @@ export default function App() {
         )}
 
         {!viewingActivity && !showActivityChat && !showSearch && activeTab === 'messages' && (
-          <MessagesTab onOpenChat={(activityId, activityName, spotName) => {
-            // For demo, we need to create a mock activity
-            // In production, this would fetch the activity by ID
-            const mockActivity: Activity = {
-              id: activityId,
-              title: activityName,
-              description: `Activity at ${spotName}`,
-              fullDescription: `This is a demo activity for ${activityName} at ${spotName}`,
-              photo: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-              photos: ['https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'],
-              category: 'Activity',
-              activityType: 'active-social',
-              vibe: ['Social', 'Fun'],
-              timeContext: 'Anytime',
-              indoor: false,
-              distance: '1.2 km',
-              savedByCount: 50,
-              goodFor: ['Socializing'],
-              location: spotName,
-              costLevel: 'Free',
-              averageRating: 4.5,
-              totalRatings: 25,
-              communityPhotos: [],
-              threads: [],
-              currentConditions: {
-                crowdLevel: 'Moderate',
-                atmosphere: 'Friendly',
-              },
-            };
-            setViewingActivity(mockActivity);
-            setShowActivityChat({ activityId, activityName, spotName });
+          <MessagesTab onOpenChat={async (activityId, activityName, spotName) => {
+            try {
+              const activity = await api.getActivity(activityId);
+              setViewingActivity(activity);
+              setShowActivityChat({ activityId, activityName, spotName });
+            } catch {
+              // Fallback to mock activity if fetch fails
+              const mockActivity: Activity = {
+                id: activityId,
+                title: activityName,
+                description: `Activity at ${spotName}`,
+                fullDescription: `This is a demo activity for ${activityName} at ${spotName}`,
+                photo: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+                photos: ['https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'],
+                category: 'Activity',
+                activityType: 'active-social',
+                vibe: ['Social', 'Fun'],
+                timeContext: 'Anytime',
+                indoor: false,
+                distance: '1.2 km',
+                savedByCount: 50,
+                goodFor: ['Socializing'],
+                location: spotName,
+                costLevel: 'Free',
+                averageRating: 4.5,
+                totalRatings: 25,
+                communityPhotos: [],
+                threads: [],
+                currentConditions: {
+                  crowdLevel: 'Moderate',
+                  atmosphere: 'Friendly',
+                },
+              };
+              setViewingActivity(mockActivity);
+              setShowActivityChat({ activityId, activityName, spotName });
+            }
           }} />
         )}
       </div>

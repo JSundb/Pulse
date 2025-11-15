@@ -1,58 +1,34 @@
+import { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { api } from '../services/api';
+import type { ChatPreview } from '../types';
 
 type Props = {
   onOpenChat: (activityId: string, activityName: string, spotName: string) => void;
 };
 
 export default function MessagesTab({ onOpenChat }: Props) {
-  const recentChats = [
-    {
-      activityId: '1',
-      activityName: 'Sunrise Photography Meetup',
-      spotName: 'Golden Gate Bridge',
-      lastMessage: 'Anyone going tomorrow morning?',
-      time: '5 min ago',
-      unreadCount: 2,
-      photo: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=400',
-    },
-    {
-      activityId: '2',
-      activityName: 'Coffee & Coworking',
-      spotName: 'Urban Coffee Roasters',
-      lastMessage: 'Great spot! I\'ll be there today',
-      time: '1 hour ago',
-      unreadCount: 0,
-      photo: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400',
-    },
-    {
-      activityId: '3',
-      activityName: 'Twin Peaks Sunset Hike',
-      spotName: 'Twin Peaks',
-      lastMessage: 'The views were amazing!',
-      time: '3 hours ago',
-      unreadCount: 5,
-      photo: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=400',
-    },
-    {
-      activityId: '4',
-      activityName: 'Weekend Picnic',
-      spotName: 'Dolores Park',
-      lastMessage: 'Should we meet at 2pm?',
-      time: 'Yesterday',
-      unreadCount: 0,
-      photo: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=400',
-    },
-    {
-      activityId: '5',
-      activityName: 'Ocean Beach Walk',
-      spotName: 'Ocean Beach',
-      lastMessage: 'Sunset was incredible today',
-      time: '2 days ago',
-      unreadCount: 0,
-      photo: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400',
-    },
-  ];
+  const [recentChats, setRecentChats] = useState<ChatPreview[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.getMessages().then(data => {
+      setRecentChats(data);
+      setLoading(false);
+    }).catch(() => {
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-gray-500">Loading messages...</div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="flex h-full flex-col bg-white">
