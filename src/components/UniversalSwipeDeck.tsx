@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import DraggableSwipeCard from './DraggableSwipeCard';
 import ActivityDetailsSimple from './ActivityDetailsSimple';
-import type { Activity } from '../App';
+import type { Activity } from '../types';
 
 type Props = {
   activities: Activity[];

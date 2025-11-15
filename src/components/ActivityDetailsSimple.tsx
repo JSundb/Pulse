@@ -7,7 +7,7 @@ import RelatedActivitiesModal from './RelatedActivitiesModal';
 import AllSubActivities from './AllSubActivities';
 import SubActivityDetails from './SubActivityDetails';
 import CreateSubActivity from './CreateSubActivity';
-import type { Activity } from '../App';
+import type { Activity } from '../types';
 
 type SubActivity = {
   id: string;
