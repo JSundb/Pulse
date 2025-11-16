@@ -33,7 +33,7 @@ export default function OnboardingSimple({ onComplete }: Props) {
             <span className="text-5xl">📍</span>
           </div>
           
-          <h1 className="mb-4 text-4xl text-center text-gray-900">Pulse</h1>
+          <h1 className="mb-4 text-4xl text-center text-gray-900">Roamy</h1>
           
           <p className="mb-8 max-w-md text-center text-lg text-gray-600 leading-relaxed">
             Find spots and activities around you, plan future trips, and see what people actually do there.

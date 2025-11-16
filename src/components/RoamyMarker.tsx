@@ -7,7 +7,7 @@ type Props = {
   style?: React.CSSProperties;
 };
 
-export default function PulseMarker({ activity, onClick, style }: Props) {
+export default function RoamyMarker({ activity, onClick, style }: Props) {
   const categoryColors: Record<string, string> = {
     Social: 'from-blue-400 to-blue-600',
     Fitness: 'from-green-400 to-green-600',

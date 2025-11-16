@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import type { Activity } from '../App';
 import InterestRadar from './InterestRadar';
 import ActivityCardOverlay from './ActivityCardOverlay';
-import PulseMarker from './PulseMarker';
+import RoamyMarker from './RoamyMarker';
 
 type Props = {
   activities: Activity[];
@@ -40,7 +40,7 @@ export default function HomeRadarScreen({ activities, onActivitySelect, onModeCh
           <div className="mb-6 flex items-center justify-between">
             <div>
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Pulse
+                Roamy
               </div>
               <p className="text-gray-500">Discover what's happening</p>
             </div>
@@ -99,7 +99,7 @@ export default function HomeRadarScreen({ activities, onActivitySelect, onModeCh
           const y = Math.sin(angle) * radius;
 
           return (
-            <PulseMarker
+            <RoamyMarker
               key={activity.id}
               activity={activity}
               style={{

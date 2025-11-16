@@ -1,7 +1,7 @@
 
-  # Pulse App UI Design
+  # Roamy App UI Design
 
-  This is a code bundle for Pulse App UI Design. The original project is available at https://www.figma.com/design/tcjaHZzPEfDG1UZjLUGpCf/Pulse-App-UI-Design.
+  This is a code bundle for Roamy App UI Design. The original project is available at https://www.figma.com/design/tcjaHZzPEfDG1UZjLUGpCf/Pulse-App-UI-Design.
 
   ## Running the code
 

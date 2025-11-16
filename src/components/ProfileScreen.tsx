@@ -235,7 +235,7 @@ export default function ProfileScreen({ preferences, onUpdatePreferences }: Prop
 
         {/* App Info */}
         <div className="py-6 text-center text-sm text-gray-500">
-          <p>Pulse v1.0.0</p>
+          <p>Roamy v1.0.0</p>
           <p className="mt-1">Discover • Connect • Explore</p>
         </div>
       </div>

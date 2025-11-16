@@ -65,7 +65,7 @@ export default function Onboarding({ onComplete }: Props) {
             >
               <Compass size={48} className="text-white" strokeWidth={2} />
             </motion.div>
-            <h1 className="mb-4 text-4xl text-gray-900">Welcome to Pulse</h1>
+            <h1 className="mb-4 text-4xl text-gray-900">Welcome to Roamy</h1>
             <p className="mb-12 max-w-sm text-lg text-gray-600 leading-relaxed">
               Discover the best things to do around you, find places with the right vibe, and connect with people like you.
             </p>
