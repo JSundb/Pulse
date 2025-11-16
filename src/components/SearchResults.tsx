@@ -82,7 +82,7 @@ export default function SearchResults({ onBack, searchQuery = '' }: Props) {
   ];
 
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col bg-white pb-20">
       {/* Header with Search */}
       <div className="border-b border-gray-200 bg-white px-5 py-4">
         <button

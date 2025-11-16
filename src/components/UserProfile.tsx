@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { ArrowLeft, MessageCircle, Edit, ThumbsUp, MessageSquare, MapPin, Calendar, Award } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Edit, ThumbsUp, MessageSquare, MapPin, Calendar, Award, Settings } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import Badge from './Badge';
 import type { Activity } from '../App';
 
 type UserProfileData = {
@@ -55,6 +56,8 @@ type Props = {
   onViewActivity?: (activityId: string) => void;
   onViewThread?: (threadId: string) => void;
   onViewPhoto?: (photoUrl: string) => void;
+  onViewAchievements?: () => void;
+  onSettings?: () => void;
 };
 
 export default function UserProfile({
@@ -65,8 +68,36 @@ export default function UserProfile({
   onViewActivity,
   onViewThread,
   onViewPhoto,
+  onViewAchievements,
+  onSettings,
 }: Props) {
   const [activeTab, setActiveTab] = useState<'photos' | 'activities' | 'threads' | 'about'>('photos');
+
+  // User level and tier data (would come from backend)
+  const userLevel = 17;
+  const userTier = 'Explorer'; // 'Beginner' | 'Explorer' | 'Advanced' | 'Elite'
+  const userXP = 420;
+  const nextLevelXP = 500;
+  const xpProgress = (userXP / nextLevelXP) * 100;
+  
+  // Top 3 badges
+  const topBadges = ['🗺️', '🌅', '🦋'];
+  
+  // Tier color mapping
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'Beginner':
+        return 'from-green-500 to-green-600';
+      case 'Explorer':
+        return 'from-blue-500 to-blue-600';
+      case 'Advanced':
+        return 'from-purple-500 to-purple-600';
+      case 'Elite':
+        return 'from-yellow-500 to-yellow-600';
+      default:
+        return 'from-gray-500 to-gray-600';
+    }
+  };
 
   // Mock data - in real app would come from backend
   const mediaItems: MediaItem[] = [
@@ -205,28 +236,91 @@ export default function UserProfile({
   };
 
   return (
-    <div className="flex h-full w-full flex-col bg-white">
+    <div className="flex h-full w-full flex-col bg-background">
       {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-5 py-4">
-        <button
-          onClick={onBack}
-          className="mb-4 rounded-full p-2 text-gray-600 hover:bg-gray-100 active:scale-95"
-        >
-          <ArrowLeft size={20} />
-        </button>
+      <div className="border-b border-border bg-card px-5 py-4">
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={onBack}
+            className="rounded-full p-2 text-muted-foreground hover:bg-muted active:scale-95"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          
+          {/* Settings Icon - Only for own profile */}
+          {user.isOwnProfile && onSettings && (
+            <button
+              onClick={onSettings}
+              className="rounded-full p-2 text-muted-foreground hover:bg-muted active:scale-95"
+            >
+              <Settings size={20} />
+            </button>
+          )}
+        </div>
 
         {/* Profile Header */}
         <div className="flex items-start gap-4">
-          <img
-            src={user.avatar}
-            alt={user.name}
-            className="h-20 w-20 rounded-full bg-gray-200"
-          />
+          {/* Avatar with Level Ring */}
+          <div className="relative flex-shrink-0">
+            {/* Tier-colored ring */}
+            {user.isOwnProfile && (
+              <div className={`absolute -inset-1 rounded-full bg-gradient-to-r ${getTierColor(userTier)} p-[3px]`}>
+                <div className="h-full w-full rounded-full bg-background" />
+              </div>
+            )}
+            <img
+              src={user.avatar}
+              alt={user.name}
+              className="relative h-20 w-20 rounded-full bg-muted"
+            />
+          </div>
 
           <div className="flex-1">
-            <h1 className="text-2xl text-gray-900">{user.name}</h1>
-            <p className="mb-2 text-sm text-gray-600">{user.bio}</p>
-            <div className="flex items-center gap-2 text-xs text-gray-500">
+            <div className="flex items-center gap-2 mb-1">
+              <h1 className="text-xl text-foreground">{user.name}</h1>
+            </div>
+            
+            {/* Level and Tier - Improved clarity */}
+            {user.isOwnProfile && (
+              <div className="mb-2">
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#14B8A6] via-[#06B6D4] to-[#3B82F6] px-2.5 py-0.5 mb-2">
+                  <span className="text-xs text-white">Level {userLevel} — {userTier}</span>
+                </div>
+                
+                {/* Top 3 Badges */}
+                <div className="flex items-center gap-2 mb-2">
+                  {topBadges.map((badge, idx) => (
+                    <Badge
+                      key={idx}
+                      icon={badge}
+                      label=""
+                      color="teal"
+                      size="sm"
+                      earned={true}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <p className="mb-2 text-sm text-muted-foreground">{user.bio}</p>
+            
+            {/* Minimal XP bar with improved clarity */}
+            {user.isOwnProfile && (
+              <div className="mb-2">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-[#14B8A6] via-[#06B6D4] to-[#3B82F6] transition-all"
+                    style={{ width: `${xpProgress}%` }}
+                  />
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {userXP} XP earned · {nextLevelXP - userXP} XP to next level
+                </p>
+              </div>
+            )}
+            
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Calendar size={14} />
               <span>Joined {user.joinDate}</span>
             </div>
@@ -238,7 +332,7 @@ export default function UserProfile({
           {user.isOwnProfile ? (
             <button
               onClick={onEditProfile}
-              className="flex flex-1 items-center justify-center gap-2 rounded-2xl border-2 border-gray-200 bg-white px-6 py-3 text-gray-900 transition-all hover:bg-gray-50 active:scale-98"
+              className="flex flex-1 items-center justify-center gap-2 rounded-2xl border-2 border-border bg-card px-6 py-3 text-foreground transition-all hover:bg-muted/50 active:scale-98"
             >
               <Edit size={18} />
               <span>Edit Profile</span>
@@ -255,24 +349,24 @@ export default function UserProfile({
         </div>
 
         {/* Stats */}
-        <div className="mt-4 flex justify-around rounded-2xl bg-gray-50 py-3">
+        <div className="mt-4 flex justify-around rounded-2xl bg-muted py-3">
           <div className="text-center">
-            <p className="text-xl text-gray-900">{user.stats.photos}</p>
-            <p className="text-xs text-gray-500">Photos</p>
+            <p className="text-xl text-foreground">{user.stats.photos}</p>
+            <p className="text-xs text-muted-foreground">Photos</p>
           </div>
           <div className="text-center">
-            <p className="text-xl text-gray-900">{user.stats.activities}</p>
-            <p className="text-xs text-gray-500">Activities</p>
+            <p className="text-xl text-foreground">{user.stats.activities}</p>
+            <p className="text-xs text-muted-foreground">Activities</p>
           </div>
           <div className="text-center">
-            <p className="text-xl text-gray-900">{user.stats.threads}</p>
-            <p className="text-xs text-gray-500">Threads</p>
+            <p className="text-xl text-foreground">{user.stats.threads}</p>
+            <p className="text-xs text-muted-foreground">Threads</p>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-border">
         <div className="flex px-5">
           {(['photos', 'activities', 'threads', 'about'] as const).map((tab) => (
             <button
@@ -280,8 +374,8 @@ export default function UserProfile({
               onClick={() => setActiveTab(tab)}
               className={`flex-1 border-b-2 pb-3 pt-4 text-sm capitalize transition-colors ${
                 activeTab === tab
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
               {tab}
@@ -329,32 +423,32 @@ export default function UserProfile({
 
         {/* Activities Tab */}
         {activeTab === 'activities' && (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-border">
             {userActivities.map((activity) => (
               <button
                 key={activity.id}
                 onClick={() => onViewActivity?.(activity.id)}
-                className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100"
+                className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-muted/50 active:bg-muted"
               >
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-2xl">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-2xl">
                   {getActivityIcon(activity.type)}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="mb-1 truncate text-gray-900">{activity.title}</h3>
+                  <h3 className="mb-1 truncate text-foreground">{activity.title}</h3>
                   
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin size={14} />
                     <span className="truncate">{activity.spotName}</span>
                   </div>
 
                   {activity.datetime && (
-                    <p className="mt-1 text-xs text-blue-600">{activity.datetime}</p>
+                    <p className="mt-1 text-xs text-primary">{activity.datetime}</p>
                   )}
                 </div>
 
                 {activity.upvotes !== undefined && (
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <ThumbsUp size={14} />
                     <span>{activity.upvotes}</span>
                   </div>
@@ -366,7 +460,7 @@ export default function UserProfile({
 
         {/* Threads Tab */}
         {activeTab === 'threads' && (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-border">
             {userThreads.map((thread) => {
               const badge = getThreadTypeBadge(thread.threadType);
               
@@ -374,19 +468,19 @@ export default function UserProfile({
                 <button
                   key={thread.id}
                   onClick={() => onViewThread?.(thread.id)}
-                  className="flex w-full flex-col gap-2 px-5 py-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100"
+                  className="flex w-full flex-col gap-2 px-5 py-4 text-left transition-colors hover:bg-muted/50 active:bg-muted"
                 >
                   <div className="flex items-center gap-2">
                     <span className={`rounded-full px-2 py-0.5 text-xs ${badge.color}`}>
                       {badge.label}
                     </span>
-                    <span className="text-xs text-gray-500">{thread.timestamp}</span>
+                    <span className="text-xs text-muted-foreground">{thread.timestamp}</span>
                   </div>
 
-                  <h3 className="text-gray-900">{thread.title}</h3>
-                  <p className="text-sm text-gray-600 line-clamp-1">{thread.preview}</p>
+                  <h3 className="text-foreground">{thread.title}</h3>
+                  <p className="text-sm text-muted-foreground line-clamp-1">{thread.preview}</p>
 
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <ThumbsUp size={14} />
                       <span>{thread.upvotes}</span>
@@ -405,6 +499,76 @@ export default function UserProfile({
         {/* About Tab */}
         {activeTab === 'about' && (
           <div className="p-5">
+            {/* XP & Level Section */}
+            {user.isOwnProfile && (
+              <div className="mb-6">
+                <h2 className="mb-3 text-lg text-gray-900">Your Level</h2>
+                <div className="rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 p-5 text-white">
+                  <div className="mb-3 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm opacity-90">Current Level</p>
+                      <p className="text-3xl">Level 5</p>
+                    </div>
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                      <Award size={32} />
+                    </div>
+                  </div>
+                  <div className="mb-2">
+                    <div className="h-2.5 overflow-hidden rounded-full bg-white/20">
+                      <div
+                        className="h-full rounded-full bg-white transition-all"
+                        style={{ width: '85%' }}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-sm opacity-90">340 / 400 XP</p>
+                </div>
+              </div>
+            )}
+
+            {/* Achievements Preview */}
+            {user.isOwnProfile && (
+              <div className="mb-6">
+                <div className="mb-3 flex items-center justify-between">
+                  <h2 className="text-lg text-gray-900">Achievements</h2>
+                  <button
+                    onClick={onViewAchievements}
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    View All
+                  </button>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {/* Badge 1 - Earned */}
+                  <div className="flex flex-col items-center gap-2 rounded-2xl border border-gray-200 bg-white p-3">
+                    <span className="text-3xl">🗺️</span>
+                    <p className="text-center text-xs text-gray-900">Explorer</p>
+                    <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">
+                      ✓ Earned
+                    </span>
+                  </div>
+                  
+                  {/* Badge 2 - Earned */}
+                  <div className="flex flex-col items-center gap-2 rounded-2xl border border-gray-200 bg-white p-3">
+                    <span className="text-3xl">🌅</span>
+                    <p className="text-center text-xs text-gray-900">Sunset Chaser</p>
+                    <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">
+                      ✓ Earned
+                    </span>
+                  </div>
+                  
+                  {/* Badge 3 - Earned */}
+                  <div className="flex flex-col items-center gap-2 rounded-2xl border border-gray-200 bg-white p-3">
+                    <span className="text-3xl">🦋</span>
+                    <p className="text-center text-xs text-gray-900">Social Butterfly</p>
+                    <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">
+                      ✓ Earned
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Bio */}
             <div className="mb-6">
               <h2 className="mb-2 text-lg text-gray-900">Bio</h2>

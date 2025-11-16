@@ -41,7 +41,7 @@ export default function ProfileScreen({ preferences, onUpdatePreferences }: Prop
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="h-full overflow-y-auto bg-gradient-to-br from-blue-50 via-white to-purple-50 pb-20">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <div className="mb-6 flex items-center gap-4">
@@ -235,7 +235,7 @@ export default function ProfileScreen({ preferences, onUpdatePreferences }: Prop
 
         {/* App Info */}
         <div className="py-6 text-center text-sm text-gray-500">
-          <p>Pulse v1.0.0</p>
+          <p>Roamy v1.0.0</p>
           <p className="mt-1">Discover • Connect • Explore</p>
         </div>
       </div>

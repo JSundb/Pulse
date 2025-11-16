@@ -1,9 +1,7 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import type { Activity } from '../App';
 import InterestRadar from './InterestRadar';
 import ActivityCardOverlay from './ActivityCardOverlay';
 import PulseMarker from './PulseMarker';
+import roamyLogo from 'figma:asset/cf9e2e7d21e5aef70cdebd7a6fea9d952edaf6ae.png';
 
 type Props = {
   activities: Activity[];
@@ -38,11 +36,14 @@ export default function HomeRadarScreen({ activities, onActivitySelect, onModeCh
       <div className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-white/80 to-transparent px-6 pb-6 pt-12 backdrop-blur-sm">
         <div className="mx-auto max-w-md">
           <div className="mb-6 flex items-center justify-between">
-            <div>
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Pulse
+            <div className="flex items-center gap-3">
+              <img src={roamyLogo} alt="Roamy" className="h-8" />
+              <div>
+                <div className="bg-gradient-to-r from-[#14B8A6] via-[#06B6D4] to-[#3B82F6] bg-clip-text text-transparent">
+                  Roamy
+                </div>
+                <p className="text-gray-500">Discover what's happening</p>
               </div>
-              <p className="text-gray-500">Discover what's happening</p>
             </div>
             <button
               onClick={onModeChange}

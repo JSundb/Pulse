@@ -4,7 +4,6 @@
   import path from 'path';
 
   export default defineConfig({
-    base: process.env.GITHUB_PAGES ? '/Pulse/' : '/',
     plugins: [react()],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
@@ -18,6 +17,8 @@
         'next-themes@0.4.6': 'next-themes',
         'lucide-react@0.487.0': 'lucide-react',
         'input-otp@1.4.2': 'input-otp',
+        'figma:asset/cf9e2e7d21e5aef70cdebd7a6fea9d952edaf6ae.png': path.resolve(__dirname, './src/assets/cf9e2e7d21e5aef70cdebd7a6fea9d952edaf6ae.png'),
+        'figma:asset/88920ae4f27e8e2569a29489a000af778c5905e8.png': path.resolve(__dirname, './src/assets/88920ae4f27e8e2569a29489a000af778c5905e8.png'),
         'embla-carousel-react@8.6.0': 'embla-carousel-react',
         'cmdk@1.1.1': 'cmdk',
         'class-variance-authority@0.7.1': 'class-variance-authority',
@@ -52,7 +53,7 @@
     },
     build: {
       target: 'esnext',
-      outDir: 'dist',
+      outDir: 'build',
     },
     server: {
       port: 3000,

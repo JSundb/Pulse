@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronRight, MapPin } from 'lucide-react';
+import roamyFullLogo from 'figma:asset/88920ae4f27e8e2569a29489a000af778c5905e8.png';
 
 type Props = {
   onComplete: (interests: string[]) => void;
@@ -25,15 +26,11 @@ export default function OnboardingSimple({ onComplete }: Props) {
   if (step === 0) {
     // Welcome screen
     return (
-      <div className="flex h-full flex-col items-center justify-between bg-gradient-to-br from-blue-50 via-white to-purple-50 p-8">
-        <div className="flex-1" />
-        
-        <div className="flex flex-col items-center">
-          <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-600 to-purple-600 shadow-2xl">
-            <span className="text-5xl">📍</span>
+      <div className="flex h-full flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-8">
+        <div className="flex flex-1 flex-col items-center justify-center">
+          <div className="mb-8">
+            <img src={roamyFullLogo} alt="Roamy Logo" className="h-48" />
           </div>
-          
-          <h1 className="mb-4 text-4xl text-center text-gray-900">Pulse</h1>
           
           <p className="mb-8 max-w-md text-center text-lg text-gray-600 leading-relaxed">
             Find spots and activities around you, plan future trips, and see what people actually do there.
@@ -94,35 +91,33 @@ export default function OnboardingSimple({ onComplete }: Props) {
 
   // Location permission screen
   return (
-    <div className="flex h-full flex-col items-center justify-between bg-gradient-to-br from-blue-50 via-white to-purple-50 p-8">
-      <div className="flex-1" />
-      
-      <div className="flex flex-col items-center">
+    <div className="flex h-full flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-8">
+      <div className="flex flex-col items-center max-w-md">
         <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-2xl">
           <MapPin size={48} />
         </div>
         
         <h2 className="mb-4 text-3xl text-center text-gray-900">Enable Location</h2>
         
-        <p className="mb-8 max-w-md text-center text-lg text-gray-600 leading-relaxed">
+        <p className="mb-8 text-center text-lg text-gray-600 leading-relaxed">
           We use your location to show nearby spots and activities, and to plan future locations.
         </p>
-      </div>
 
-      <div className="w-full space-y-3">
-        <button
-          onClick={() => onComplete(selectedInterests)}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-8 py-4 text-white shadow-lg transition-all hover:bg-blue-700 active:scale-98"
-        >
-          Enable Location
-        </button>
-        
-        <button
-          onClick={() => onComplete(selectedInterests)}
-          className="w-full rounded-2xl bg-white/50 px-8 py-4 text-gray-600 transition-all hover:bg-white/80 active:scale-98"
-        >
-          Skip for now
-        </button>
+        <div className="w-full space-y-3">
+          <button
+            onClick={() => onComplete(selectedInterests)}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-8 py-4 text-white shadow-lg transition-all hover:bg-blue-700 active:scale-98"
+          >
+            Enable Location
+          </button>
+          
+          <button
+            onClick={() => onComplete(selectedInterests)}
+            className="w-full rounded-2xl bg-white/50 px-8 py-4 text-gray-600 transition-all hover:bg-white/80 active:scale-98"
+          >
+            Skip for now
+          </button>
+        </div>
       </div>
     </div>
   );

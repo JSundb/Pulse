@@ -90,17 +90,17 @@ export default function FutureLocationsSwipe({ onBack }: Props) {
   // Show activities for selected location
   if (selectedLocation) {
     return (
-      <div className="flex h-full flex-col bg-white">
+      <div className="flex h-full flex-col bg-background">
         {/* Header */}
-        <div className="border-b border-gray-200 bg-white px-5 py-4">
+        <div className="border-b border-border bg-card px-5 py-4">
           <button
             onClick={() => setSelectedLocation(null)}
-            className="mb-3 flex items-center gap-2 text-gray-600 transition-colors hover:text-gray-900"
+            className="mb-3 flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft size={20} />
           </button>
-          <h1 className="mb-1 text-3xl text-gray-900">{selectedLocation.name}</h1>
-          <div className="flex items-center gap-2 text-gray-600">
+          <h1 className="mb-1 text-3xl text-foreground">{selectedLocation.name}</h1>
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Calendar size={16} />
             <span>{selectedLocation.dateRange}</span>
           </div>
@@ -120,19 +120,19 @@ export default function FutureLocationsSwipe({ onBack }: Props) {
 
   // Show location cards
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col bg-background">
       {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-5 py-4">
+      <div className="border-b border-border bg-card px-5 py-4">
         {onBack && (
           <button
             onClick={onBack}
-            className="mb-3 flex items-center gap-2 text-gray-600 transition-colors hover:text-gray-900"
+            className="mb-3 flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft size={20} />
           </button>
         )}
-        <h1 className="mb-1 text-3xl text-gray-900">Future Locations</h1>
-        <p className="text-gray-600">Plan your upcoming trips</p>
+        <h1 className="mb-1 text-3xl text-foreground">Future Locations</h1>
+        <p className="text-muted-foreground">Plan your upcoming trips</p>
       </div>
 
       {/* Location Cards */}
@@ -142,22 +142,22 @@ export default function FutureLocationsSwipe({ onBack }: Props) {
             <button
               key={location.id}
               onClick={() => setSelectedLocation(location)}
-              className="w-full rounded-3xl bg-gradient-to-br from-blue-50 to-purple-50 p-6 text-left shadow-lg transition-all hover:shadow-xl active:scale-98"
+              className="w-full rounded-3xl bg-gradient-to-br from-primary/10 to-primary/5 p-6 text-left shadow-lg transition-all hover:shadow-xl active:scale-98 border border-border"
             >
-              <div className="mb-2 flex items-center gap-2 text-blue-600">
+              <div className="mb-2 flex items-center gap-2 text-primary">
                 <MapPin size={20} />
                 <span className="text-sm">Upcoming Trip</span>
               </div>
-              <h3 className="mb-2 text-2xl text-gray-900">{location.name}</h3>
-              <p className="mb-2 text-gray-600">{location.address}</p>
-              <div className="flex items-center gap-2 text-gray-500">
+              <h3 className="mb-2 text-2xl text-foreground">{location.name}</h3>
+              <p className="mb-2 text-muted-foreground">{location.address}</p>
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar size={16} />
                 <span className="text-sm">{location.dateRange}</span>
               </div>
             </button>
           ))}
 
-          <button className="flex w-full items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-gray-300 p-6 text-gray-600 transition-all hover:border-blue-500 hover:text-blue-600 active:scale-98">
+          <button className="flex w-full items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-border p-6 text-muted-foreground transition-all hover:border-primary hover:text-primary active:scale-98">
             <MapPin size={20} />
             <span>Add New Location</span>
           </button>
