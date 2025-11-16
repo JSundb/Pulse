@@ -41,7 +41,7 @@ export default function ProfileScreen({ preferences, onUpdatePreferences }: Prop
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="h-full overflow-y-auto bg-gradient-to-br from-blue-50 via-white to-purple-50 pb-20">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <div className="mb-6 flex items-center gap-4">

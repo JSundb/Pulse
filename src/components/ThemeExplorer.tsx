@@ -1,4 +1,5 @@
 import { Search } from 'lucide-react';
+import roamyLogo from 'figma:asset/cf9e2e7d21e5aef70cdebd7a6fea9d952edaf6ae.png';
 
 type Theme = {
   id: string;
@@ -81,18 +82,21 @@ export default function ThemeExplorer({ onSelectTheme, onOpenSearch }: Props) {
   ];
 
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col bg-background">
       {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-5 py-4">
-        <h1 className="mb-4 text-3xl text-gray-900">Explore</h1>
+      <div className="border-b border-border bg-card px-5 py-4">
+        <div className="mb-4 flex items-center gap-3">
+          <img src={roamyLogo} alt="Roamy" className="h-8" />
+          <h1 className="text-3xl text-foreground">Explore</h1>
+        </div>
         
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
           <input
             type="text"
             placeholder="Search spots and activities"
-            className="w-full rounded-2xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-2xl border border-border bg-input-background py-3 pl-12 pr-4 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             onClick={onOpenSearch}
           />
         </div>

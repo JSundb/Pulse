@@ -172,11 +172,11 @@ export default function SavedList({ onOpenActivity }: Props) {
   ];
 
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col bg-background pb-20">
       {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-5 py-4">
-        <h1 className="text-3xl text-gray-900">Saved</h1>
-        <p className="mt-1 text-sm text-gray-600">Your spots and activities</p>
+      <div className="border-b border-border bg-card px-5 py-4">
+        <h1 className="text-3xl text-foreground">Saved</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Your spots and activities</p>
       </div>
 
       {/* Saved List */}
@@ -184,9 +184,9 @@ export default function SavedList({ onOpenActivity }: Props) {
         {savedActivities.length === 0 ? (
           <div className="flex h-full items-center justify-center p-8 text-center">
             <div>
-              <Heart size={48} className="mx-auto mb-4 text-gray-300" />
-              <h2 className="mb-2 text-xl text-gray-900">No saved items yet</h2>
-              <p className="text-gray-600">
+              <Heart size={48} className="mx-auto mb-4 text-muted-foreground" />
+              <h2 className="mb-2 text-xl text-foreground">No saved items yet</h2>
+              <p className="text-muted-foreground">
                 Start exploring and save spots and activities you want to visit
               </p>
             </div>
@@ -196,7 +196,7 @@ export default function SavedList({ onOpenActivity }: Props) {
             {savedActivities.map((activity) => (
               <div
                 key={activity.id}
-                className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl bg-white border border-gray-200 p-3 shadow-sm transition-all hover:shadow-md"
+                className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl bg-card border border-border p-3 shadow-sm transition-all hover:shadow-md"
               >
                 <div
                   onClick={() => onOpenActivity(activity)}
@@ -214,16 +214,16 @@ export default function SavedList({ onOpenActivity }: Props) {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="mb-1 flex items-center gap-2">
-                      <span className="inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
+                      <span className="inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
                         {activity.category}
                       </span>
-                      <span className="flex items-center gap-1 text-xs text-gray-500">
+                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
                         <MapPin size={10} />
                         {activity.distance}
                       </span>
                     </div>
-                    <h3 className="mb-1 text-gray-900 truncate">{activity.title}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-1">{activity.description}</p>
+                    <h3 className="mb-1 text-foreground truncate">{activity.title}</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-1">{activity.description}</p>
                   </div>
                 </div>
 
@@ -233,7 +233,7 @@ export default function SavedList({ onOpenActivity }: Props) {
                     e.stopPropagation();
                     // Handle remove logic here
                   }}
-                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-100 hover:text-red-600"
+                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
                 >
                   <X size={16} />
                 </button>

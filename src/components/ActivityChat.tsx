@@ -15,9 +15,10 @@ type ChatMessage = {
 type Props = {
   activity: Activity;
   onBack: () => void;
+  onOpenActivity?: () => void;
 };
 
-export default function ActivityChat({ activity, onBack }: Props) {
+export default function ActivityChat({ activity, onBack, onOpenActivity }: Props) {
   const [message, setMessage] = useState('');
   
   // Mock messages - in real app would come from backend
@@ -81,24 +82,27 @@ export default function ActivityChat({ activity, onBack }: Props) {
   };
 
   return (
-    <div className="flex h-full w-full flex-col bg-gray-50">
+    <div className="flex h-full w-full flex-col bg-background">
       {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-4 py-3">
+      <div className="border-b border-border bg-card px-4 py-3">
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}
-            className="rounded-full p-2 text-gray-600 hover:bg-gray-100 active:scale-95"
+            className="rounded-full p-2 text-muted-foreground hover:bg-muted active:scale-95"
           >
             <ArrowLeft size={20} />
           </button>
           
-          <div className="flex-1">
+          <button
+            onClick={onOpenActivity}
+            className="flex-1 text-left transition-colors hover:opacity-80"
+          >
             <div className="flex items-center gap-2">
               <span className="text-sm">{activity.category === 'Hiking' ? '🥾' : activity.category === 'Café' ? '☕' : '📍'}</span>
-              <h2 className="text-gray-900">{activity.title}</h2>
+              <h2 className="text-foreground">{activity.title}</h2>
             </div>
-            <p className="text-sm text-gray-500">Chat with people interested in this activity</p>
-          </div>
+            <p className="text-sm text-muted-foreground">Chat with people interested in this activity</p>
+          </button>
         </div>
       </div>
 
@@ -114,26 +118,26 @@ export default function ActivityChat({ activity, onBack }: Props) {
                   <img
                     src={msg.userAvatar}
                     alt={msg.userName}
-                    className="h-10 w-10 rounded-full bg-gray-200"
+                    className="h-10 w-10 rounded-full bg-muted"
                   />
                 </div>
 
                 <div className={`flex flex-col ${isCurrentUser ? 'items-end' : 'items-start'}`}>
                   {!isCurrentUser && (
-                    <span className="mb-1 px-3 text-xs text-gray-600">{msg.userName}</span>
+                    <span className="mb-1 px-3 text-xs text-muted-foreground">{msg.userName}</span>
                   )}
                   
                   <div
                     className={`max-w-[260px] rounded-2xl px-4 py-2 ${
                       isCurrentUser
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-900'
+                        ? 'bg-primary text-white'
+                        : 'bg-card text-foreground border border-border'
                     }`}
                   >
                     <p className="text-sm">{msg.message}</p>
                   </div>
                   
-                  <span className="mt-1 px-3 text-xs text-gray-400">{msg.timestamp}</span>
+                  <span className="mt-1 px-3 text-xs text-muted-foreground">{msg.timestamp}</span>
                 </div>
               </div>
             );
@@ -142,9 +146,9 @@ export default function ActivityChat({ activity, onBack }: Props) {
       </div>
 
       {/* Input */}
-      <div className="border-t border-gray-200 bg-white p-4">
+      <div className="border-t border-border bg-card p-4">
         <div className="flex items-center gap-3">
-          <button className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 active:scale-95">
+          <button className="rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95">
             <ImageIcon size={20} />
           </button>
 
@@ -154,13 +158,13 @@ export default function ActivityChat({ activity, onBack }: Props) {
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Type a message..."
-            className="flex-1 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none"
+            className="flex-1 rounded-full border border-border bg-muted px-4 py-2 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:bg-card focus:outline-none"
           />
 
           <button
             onClick={handleSend}
             disabled={!message.trim()}
-            className="rounded-full bg-blue-600 p-2 text-white transition-all hover:bg-blue-700 active:scale-95 disabled:bg-gray-300"
+            className="rounded-full bg-primary p-2 text-white transition-all hover:bg-primary/90 active:scale-95 disabled:opacity-50"
           >
             <Send size={20} />
           </button>

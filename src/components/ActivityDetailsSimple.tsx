@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Heart, MessageCircle, ThumbsUp, Users, MapPin, Clock, TrendingUp, Plus, Star, ChevronRight } from 'lucide-react';
+import { X, Heart, MessageCircle, ThumbsUp, Users, MapPin, Clock, TrendingUp, Plus, Star, ChevronRight, Share2, Sparkles } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import ActivityChat from './ActivityChat';
 import UniversalSwipeDeck from './UniversalSwipeDeck';
@@ -7,7 +7,36 @@ import RelatedActivitiesModal from './RelatedActivitiesModal';
 import AllSubActivities from './AllSubActivities';
 import SubActivityDetails from './SubActivityDetails';
 import CreateSubActivity from './CreateSubActivity';
+import PackServiceSheet from './PackServiceSheet';
+import RoamyAIChat from './RoamyAIChat';
+import ShareActivitySheet from './ShareActivitySheet';
+import ServiceDetails from './ServiceDetails';
+import DeliveryConfirmation from './DeliveryConfirmation';
 import type { Activity } from '../App';
+
+type EnhanceOption = {
+  id: string;
+  name: string;
+  providerName: string;
+  price: string;
+  eta: string;
+  content: string;
+  aiNote: string;
+  image: string;
+  type: 'food' | 'drink' | 'guide' | 'equipment' | 'workshop' | 'experience';
+  tag?: {
+    text: string;
+    emoji: string;
+    bgColor: string;
+    textColor: string;
+  };
+  isService?: boolean;
+  availableTimes?: string[];
+  meetingPoint?: string;
+  rating?: number;
+  totalReviews?: number;
+  addOns?: { id: string; name: string; price: string }[];
+};
 
 type SubActivity = {
   id: string;
@@ -22,46 +51,246 @@ type SubActivity = {
   spotName?: string;
 };
 
-type ViewState = 'details' | 'chat' | 'allSubActivities' | 'subActivityDetails' | 'createSubActivity';
+type ViewState = 'details' | 'chat' | 'allSubActivities' | 'subActivityDetails' | 'createSubActivity' | 'serviceDetails';
 
 type Props = {
   activity: Activity;
   onBack: () => void;
   onSave: () => void;
   onJoin: () => void;
+  onOpenThread?: (threadId: string) => void;
+  onViewAllThreads?: () => void;
+  onCreateThread?: () => void;
+  isSaved?: boolean;
 };
 
-export default function ActivityDetailsSimple({ activity, onBack, onSave, onJoin }: Props) {
+export default function ActivityDetailsSimple({ activity, onBack, onSave, onJoin, onOpenThread, onViewAllThreads, onCreateThread, isSaved = false }: Props) {
   const [viewState, setViewState] = useState<ViewState>('details');
   const [showRelated, setShowRelated] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [selectedSubActivity, setSelectedSubActivity] = useState<SubActivity | null>(null);
+  const [selectedPack, setSelectedPack] = useState<any | null>(null);
+  const [showRoamyChat, setShowRoamyChat] = useState(false);
+  const [showShareSheet, setShowShareSheet] = useState(false);
+  const [showPackConfirmation, setShowPackConfirmation] = useState(false);
+  const [orderType, setOrderType] = useState<'pickup' | 'delivery'>('pickup');
+  const [selectedServices, setSelectedServices] = useState<EnhanceOption[]>([]);
+  const [selectedService, setSelectedService] = useState<any | null>(null);
   const [subActivities, setSubActivities] = useState<SubActivity[]>([
     {
       id: '1',
-      title: 'Sunrise Photography Challenge',
-      description: 'Capture the perfect sunrise shot',
+      title: 'Sunset Photography Challenge',
+      description: 'Capture the best sunset photo',
       type: 'challenge',
       icon: '📸',
       upvotes: 24,
       participants: 12,
-      difficulty: 'Medium',
-      spotName: activity.title,
+      difficulty: 'Easy',
     },
     {
       id: '2',
-      title: 'Evening Hike Meetup',
-      description: 'Group hike at sunset',
+      title: 'Evening Joggers Meetup',
+      description: 'Join us for a 5K run',
       type: 'meetup',
-      icon: '👥',
+      icon: '🏃',
       upvotes: 18,
       participants: 8,
-      date: 'Tomorrow, 6:00 PM',
-      spotName: activity.title,
+      date: 'Today, 6:00 PM',
     },
   ]);
 
   const photos = activity.photos && activity.photos.length > 0 ? activity.photos : [activity.photo];
+
+  // Local Services & Experiences data
+  const localServices: EnhanceOption[] = [
+    {
+      id: 'ls1',
+      name: 'Professional Photography Guide',
+      providerName: 'Expert Photographer',
+      price: '€20/hr',
+      eta: '10 min',
+      content: 'Expert photographer teaches composition, lighting, and camera settings while exploring scenic spots.',
+      aiNote: 'Ideal for capturing the perfect sunrise.',
+      image: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=400',
+      type: 'guide',
+      isService: true,
+      availableTimes: ['Today, 14:00', 'Today, 16:00', 'Today, 18:00', 'Tomorrow, 10:00', 'Tomorrow, 14:00'],
+      meetingPoint: 'Main entrance near parking lot',
+      rating: 4.9,
+      totalReviews: 87,
+      tag: {
+        text: 'Sunset in 42 min',
+        emoji: '⏰',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-700',
+      },
+    },
+    {
+      id: 'ls2',
+      name: 'Equipment Rental (Camera & Tripod)',
+      providerName: 'Professional Rentals',
+      price: '€12/day',
+      eta: '15 min',
+      content: 'Professional DSLR camera with wide-angle lens, sturdy tripod, and storage bag. Perfect for landscape photography.',
+      aiNote: 'Ideal for capturing the perfect sunrise.',
+      image: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=400',
+      type: 'equipment',
+      isService: false,
+      rating: 4.7,
+      totalReviews: 124,
+      addOns: [
+        { id: 'a10', name: '+ Extra Battery', price: '€3.00' },
+        { id: 'a11', name: '+ Memory Card (64GB)', price: '€5.00' },
+      ],
+      tag: {
+        text: 'Sunset in 42 min',
+        emoji: '⏰',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-700',
+      },
+    },
+    {
+      id: 'ls3',
+      name: 'Sunset Hike with Local Expert',
+      providerName: 'Local Naturalist',
+      price: '€25/person',
+      eta: '20 min',
+      content: 'Join a small group hike led by a local naturalist. Learn about flora, fauna, and the best sunset viewing spots.',
+      aiNote: 'Ideal for capturing the perfect sunrise.',
+      image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=400',
+      type: 'experience',
+      isService: true,
+      availableTimes: ['Today, 17:30', 'Today, 19:00', 'Tomorrow, 17:30', 'Tomorrow, 19:00'],
+      meetingPoint: 'Trailhead parking lot',
+      rating: 5.0,
+      totalReviews: 53,
+      tag: {
+        text: 'Sunset in 42 min',
+        emoji: '⏰',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-700',
+      },
+    },
+    {
+      id: 'ls4',
+      name: 'Intro to Nature Photography',
+      providerName: 'Photography Workshop',
+      price: '€35',
+      eta: '30 min',
+      content: 'Hands-on workshop covering camera basics, composition rules, and editing tips. Suitable for beginners.',
+      aiNote: 'Ideal for capturing the perfect sunrise.',
+      image: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=400',
+      type: 'workshop',
+      isService: true,
+      availableTimes: ['Saturday, 10:00', 'Saturday, 14:00', 'Sunday, 10:00', 'Sunday, 14:00'],
+      meetingPoint: 'Community center nearby',
+      rating: 4.8,
+      totalReviews: 76,
+      tag: {
+        text: 'Sunset in 42 min',
+        emoji: '⏰',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-700',
+      },
+    },
+  ];
+
+  // Wolt AI Packs data
+  const woltPacks: EnhanceOption[] = [
+    {
+      id: '1',
+      name: 'Sunset Energy Pack',
+      providerName: 'Sunrise Bakery',
+      price: '€12.50',
+      eta: '10 min',
+      content: '2 coffees + 2 croissants + energy bar',
+      aiNote: 'Weather cools down in 40 minutes — ideal for sunset paths.',
+      image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400',
+      type: 'food',
+      rating: 4.8,
+      totalReviews: 142,
+      addOns: [
+        { id: 'a1', name: '+ Water Bottle', price: '€2.00' },
+        { id: 'a2', name: '+ Extra Croissant', price: '€3.50' },
+        { id: 'a3', name: '+ Fresh Fruit', price: '€2.50' },
+      ],
+      tag: {
+        text: 'Sunset in 42 min',
+        emoji: '⏰',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-700',
+      },
+    },
+    {
+      id: '2',
+      name: 'Warm Drink – Cozy Corner Café',
+      providerName: 'Cozy Corner Café',
+      price: '€4.50',
+      eta: 'Available until 19:30',
+      content: 'Hot chocolate or coffee of your choice',
+      aiNote: 'Popular among users doing this activity today.',
+      image: 'https://images.unsplash.com/photo-1514481538271-cf9f99627ab4?w=400',
+      type: 'drink',
+      rating: 4.6,
+      totalReviews: 98,
+      addOns: [
+        { id: 'a4', name: '+ Whipped Cream', price: '€0.50' },
+        { id: 'a5', name: '+ Cookie', price: '€2.00' },
+      ],
+      tag: {
+        text: 'Cold evening ahead',
+        emoji: '❄️',
+        bgColor: 'bg-blue-100',
+        textColor: 'text-blue-700',
+      },
+    },
+    {
+      id: '3',
+      name: 'Light Snack Box',
+      providerName: 'Fresh Bites',
+      price: '€8.90',
+      eta: '15 min',
+      content: 'Snack box for 2 people – pastry + fruit + drinks',
+      aiNote: 'Based on your previous saved nature spots.',
+      image: 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=400',
+      type: 'food',
+      rating: 4.9,
+      totalReviews: 215,
+      addOns: [
+        { id: 'a6', name: '+ Extra Juice', price: '€3.00' },
+        { id: 'a7', name: '+ Granola Bar', price: '€2.50' },
+      ],
+      tag: {
+        text: 'For you',
+        emoji: '✨',
+        bgColor: 'bg-purple-100',
+        textColor: 'text-purple-700',
+      },
+    },
+    {
+      id: '4',
+      name: 'Hydration Pack',
+      providerName: 'Health Hub',
+      price: '€6.00',
+      eta: '8 min',
+      content: '2 sports drinks + protein bar',
+      aiNote: 'Suggested for this route\'s difficulty & warm weather.',
+      image: 'https://images.unsplash.com/photo-1523677011781-c91d1bbe2f0d?w=400',
+      type: 'drink',
+      rating: 4.7,
+      totalReviews: 178,
+      addOns: [
+        { id: 'a8', name: '+ Energy Gel', price: '€2.50' },
+        { id: 'a9', name: '+ Extra Protein Bar', price: '€3.00' },
+      ],
+      tag: {
+        text: 'Trending today',
+        emoji: '🔥',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-700',
+      },
+    },
+  ];
 
   // Mock threads
   const threads = [
@@ -150,6 +379,24 @@ export default function ActivityDetailsSimple({ activity, onBack, onSave, onJoin
     );
   }
 
+  if (viewState === 'serviceDetails' && selectedService) {
+    return (
+      <ServiceDetails
+        service={selectedService}
+        onBack={() => {
+          setSelectedService(null);
+          setViewState('details');
+        }}
+        onBook={() => {
+          // Show booking confirmation
+          alert(`Booked: ${selectedService.name}`);
+          setSelectedService(null);
+          setViewState('details');
+        }}
+      />
+    );
+  }
+
   const typeBadge = {
     story: { label: 'Story', color: 'bg-purple-100 text-purple-700' },
     tip: { label: 'Tip', color: 'bg-blue-100 text-blue-700' },
@@ -158,7 +405,7 @@ export default function ActivityDetailsSimple({ activity, onBack, onSave, onJoin
   };
 
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col bg-white pb-20">
       {/* Header */}
       <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white/95 px-5 py-4 backdrop-blur-lg">
         <button
@@ -168,7 +415,24 @@ export default function ActivityDetailsSimple({ activity, onBack, onSave, onJoin
           <X size={20} />
         </button>
         <h1 className="flex-1 px-4 text-center text-lg text-gray-900 truncate">{activity.title}</h1>
-        <div className="w-10" />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onSave}
+            className={`flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95 ${
+              isSaved
+                ? 'bg-red-100 text-red-600'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            <Heart size={18} className={isSaved ? 'fill-current' : ''} />
+          </button>
+          <button
+            onClick={() => setShowShareSheet(true)}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-all hover:bg-gray-200 active:scale-95"
+          >
+            <Share2 size={18} />
+          </button>
+        </div>
       </div>
 
       {/* Scrollable Content */}
@@ -292,81 +556,77 @@ export default function ActivityDetailsSimple({ activity, onBack, onSave, onJoin
           </ul>
         </div>
 
-        {/* Wolt AI Packs */}
+        {/* Enhance Your Experience (AI-Powered) - UNIFIED SECTION */}
         <div className="border-b border-gray-100 p-5">
-          <h3 className="mb-1 text-lg text-gray-900">Wolt AI Packs</h3>
-          <p className="mb-4 text-sm text-gray-600">Personalized recommendations for this activity based on weather, time, and your habits.</p>
+          <h3 className="mb-1 text-lg text-gray-900">Enhance Your Experience (AI-Powered)</h3>
+          <p className="mb-4 text-sm text-gray-600">
+            Recommended items and services based on weather, time, location, and your habits.
+          </p>
 
-          {/* Horizontal scroll row */}
-          <div className="mb-4 flex gap-3 overflow-x-auto pb-2">
-            {/* AI Pack Card 1 */}
-            <div className="flex-shrink-0 w-56 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
-              <div className="mb-2 aspect-square w-full overflow-hidden rounded-xl bg-gray-100">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400"
-                  alt="Sunset Energy Pack"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <h4 className="mb-1 text-sm text-gray-900">Sunset Energy Pack</h4>
-              <div className="mb-1 text-xs text-gray-600">
-                <span>€12.50 · 5 min away</span>
-              </div>
-              <p className="text-xs text-blue-600">AI: Weather cools down in 40 minutes — ideal for sunset paths.</p>
-            </div>
-
-            {/* AI Pack Card 2 */}
-            <div className="flex-shrink-0 w-56 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
-              <div className="mb-2 aspect-square w-full overflow-hidden rounded-xl bg-gray-100">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1514481538271-cf9f99627ab4?w=400"
-                  alt="Warm Drink"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <h4 className="mb-1 text-sm text-gray-900">Warm Drink – Cozy Corner Café</h4>
-              <div className="mb-1 text-xs text-gray-600">
-                <span>€4.50 · 3 min away</span>
-              </div>
-              <p className="text-xs text-blue-600">AI: Popular among users doing this activity today.</p>
-            </div>
-
-            {/* AI Pack Card 3 */}
-            <div className="flex-shrink-0 w-56 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
-              <div className="mb-2 aspect-square w-full overflow-hidden rounded-xl bg-gray-100">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=400"
-                  alt="Light Snack Box"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <h4 className="mb-1 text-sm text-gray-900">Light Snack Box</h4>
-              <div className="mb-1 text-xs text-gray-600">
-                <span>€8.90 · 7 min away</span>
-              </div>
-              <p className="text-xs text-blue-600">AI: Based on your previous saved nature spots.</p>
-            </div>
-
-            {/* AI Pack Card 4 */}
-            <div className="flex-shrink-0 w-56 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
-              <div className="mb-2 aspect-square w-full overflow-hidden rounded-xl bg-gray-100">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1523677011781-c91d1bbe2f0d?w=400"
-                  alt="Hydration Pack"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <h4 className="mb-1 text-sm text-gray-900">Hydration Pack</h4>
-              <div className="mb-1 text-xs text-gray-600">
-                <span>€6.00 · 4 min away</span>
-              </div>
-              <p className="text-xs text-blue-600">AI: Suggested for this route's difficulty & warm weather.</p>
-            </div>
+          {/* Unified horizontal scroll carousel */}
+          <div className="mb-2 flex gap-3 overflow-x-auto scrollbar-hide">
+            {/* Merge woltPacks and localServices */}
+            {[...woltPacks, ...localServices].map((option) => (
+              <button
+                key={option.id}
+                onClick={() => setSelectedPack(option)}
+                className="flex-shrink-0 w-56 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm transition-all hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+              >
+                {/* Tag (if exists) */}
+                {option.tag && (
+                  <div className="mb-2 flex items-center gap-1">
+                    <span className={`rounded-full ${option.tag.bgColor} px-2 py-0.5 text-xs ${option.tag.textColor}`}>
+                      {option.tag.emoji} {option.tag.text}
+                    </span>
+                  </div>
+                )}
+                <div className="mb-2 aspect-square w-full overflow-hidden rounded-xl bg-gray-100">
+                  <ImageWithFallback
+                    src={option.image}
+                    alt={option.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <h4 className="mb-1 text-sm text-gray-900">{option.name}</h4>
+                <div className="mb-1 text-xs text-gray-600">
+                  <span>{option.price} · {option.eta}</span>
+                </div>
+                <p className="text-xs text-blue-600 line-clamp-2">AI: {option.aiNote}</p>
+              </button>
+            ))}
           </div>
 
-          {/* Order button */}
-          <button className="w-full rounded-2xl bg-blue-600 px-4 py-3 text-white transition-all hover:bg-blue-700 active:scale-98">
-            Order for Pickup
+          {/* Helper text */}
+          <p className="text-center text-xs text-gray-500">
+            Tap an option to see more and enhance your experience before going.
+          </p>
+
+          {/* Ask Roamy AI */}
+          <button
+            onClick={() => setShowRoamyChat(true)}
+            className="mt-4 w-full flex items-center justify-between rounded-2xl border-2 border-purple-200 bg-gradient-to-r from-blue-50 to-purple-50 p-4 transition-all hover:shadow-md active:scale-98"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-500">
+                <Sparkles size={24} className="text-white" />
+              </div>
+              <div className="text-left">
+                <h4 className="text-gray-900">Ask Roamy AI</h4>
+                <p className="text-sm text-gray-600">
+                  Ask anything about this activity or get personalized recommendations.
+                </p>
+              </div>
+            </div>
+            <ChevronRight size={20} className="text-gray-400" />
+          </button>
+
+          {/* Share Activity Button */}
+          <button
+            onClick={() => setShowShareSheet(true)}
+            className="mt-3 w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-gray-200 bg-white px-4 py-3 text-gray-900 transition-all hover:bg-gray-50 active:scale-98"
+          >
+            <Share2 size={18} />
+            <span>Share this activity</span>
           </button>
         </div>
 
@@ -475,7 +735,11 @@ export default function ActivityDetailsSimple({ activity, onBack, onSave, onJoin
             {threads.map((thread) => {
               const badge = typeBadge[thread.type as keyof typeof typeBadge];
               return (
-                <div key={thread.id} className="rounded-2xl border border-gray-200 bg-white p-4">
+                <button
+                  key={thread.id}
+                  onClick={() => onOpenThread?.(thread.id)}
+                  className="w-full rounded-2xl border border-gray-200 bg-white p-4 text-left transition-all hover:shadow-md active:scale-98"
+                >
                   <div className="mb-2 flex items-center gap-2">
                     <span className={`rounded-full px-2 py-0.5 text-xs ${badge.color}`}>
                       {badge.label}
@@ -498,16 +762,38 @@ export default function ActivityDetailsSimple({ activity, onBack, onSave, onJoin
                       <span>{thread.comments}</span>
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
 
-          <button className="mb-2 w-full rounded-2xl border-2 border-blue-600 bg-white px-4 py-3 text-blue-600 transition-all hover:bg-blue-50 active:scale-98">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('View all threads clicked', onViewAllThreads);
+              if (onViewAllThreads) {
+                onViewAllThreads();
+              }
+            }}
+            className="mb-2 w-full rounded-2xl border-2 border-blue-600 bg-white px-4 py-3 text-blue-600 transition-all hover:bg-blue-50 active:scale-98"
+          >
             View all threads
           </button>
 
-          <button className="w-full text-blue-600 hover:underline">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Start a new thread clicked', onCreateThread);
+              if (onCreateThread) {
+                onCreateThread();
+              }
+            }}
+            className="w-full text-blue-600 hover:underline"
+          >
             Start a new thread
           </button>
         </div>
@@ -540,23 +826,70 @@ export default function ActivityDetailsSimple({ activity, onBack, onSave, onJoin
 
       {/* Bottom Action Bar */}
       <div className="border-t border-gray-200 bg-white p-4">
-        <div className="flex gap-3">
-          <button
-            onClick={onSave}
-            className="flex items-center justify-center gap-2 rounded-2xl border-2 border-gray-200 bg-white px-6 py-3 text-gray-900 transition-all hover:bg-gray-50 active:scale-98"
-          >
-            <Heart size={18} />
-            <span>Save</span>
-          </button>
-
+        {/* Only show Join button for Activities, nothing for Spots (Save is in header) */}
+        {activity.category === 'Activity' ? (
           <button
             onClick={onJoin}
-            className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3 text-white transition-all hover:bg-blue-700 active:scale-98"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3 text-white transition-all hover:bg-blue-700 active:scale-98"
           >
-            {activity.category === 'Activity' ? 'Join Activity' : 'Save Spot'}
+            Join Activity
           </button>
-        </div>
+        ) : null}
       </div>
+
+      {/* Pack Details Sheet */}
+      {selectedPack && !showPackConfirmation && (
+        <PackServiceSheet
+          option={selectedPack}
+          onClose={() => setSelectedPack(null)}
+          onOrderBook={(selectedTime) => {
+            if (selectedPack.isService) {
+              alert(`Booked: ${selectedPack.name}${selectedTime ? ` at ${selectedTime}` : ''}`);
+            } else {
+              alert(`Ordered: ${selectedPack.name}`);
+            }
+            setSelectedPack(null);
+          }}
+          onShare={() => {
+            alert(`Sharing: ${selectedPack.name}`);
+          }}
+        />
+      )}
+
+      {/* Pack Order Confirmation */}
+      {selectedPack && showPackConfirmation && (
+        <DeliveryConfirmation
+          deliveryPoint={selectedPack.deliveryDropPoint || 'Pickup location'}
+          deliveryTime={selectedPack.deliveryTime || selectedPack.pickupTiming}
+          packName={selectedPack.name}
+          onConfirm={() => {
+            alert(`Order confirmed! ${selectedPack.name}`);
+            setShowPackConfirmation(false);
+            setSelectedPack(null);
+            setOrderType('pickup');
+            setSelectedServices([]);
+          }}
+          onBack={() => {
+            setShowPackConfirmation(false);
+          }}
+        />
+      )}
+
+      {/* Share Activity Sheet */}
+      {showShareSheet && (
+        <ShareActivitySheet
+          activityTitle={activity.title}
+          onClose={() => setShowShareSheet(false)}
+        />
+      )}
+
+      {/* Roamy AI Chat */}
+      {showRoamyChat && (
+        <RoamyAIChat
+          activityTitle={activity.title}
+          onClose={() => setShowRoamyChat(false)}
+        />
+      )}
     </div>
   );
 }

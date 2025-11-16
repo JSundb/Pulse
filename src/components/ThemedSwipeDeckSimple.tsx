@@ -207,7 +207,7 @@ export default function ThemedSwipeDeckSimple({ themeId, onBack }: Props) {
   }
 
   return (
-    <div className="flex h-full flex-col bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="flex h-full flex-col bg-gradient-to-br from-blue-50 via-white to-purple-50 pb-20">
       {/* Header */}
       <div className="border-b border-gray-100 bg-white/80 backdrop-blur-lg">
         <div className="px-5 py-4">

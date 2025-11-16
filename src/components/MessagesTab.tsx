@@ -55,11 +55,11 @@ export default function MessagesTab({ onOpenChat }: Props) {
   ];
 
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col bg-background">
       {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-5 py-4">
-        <h1 className="text-3xl text-gray-900">Messages</h1>
-        <p className="mt-1 text-sm text-gray-600">Activity chats</p>
+      <div className="border-b border-border bg-card px-5 py-4">
+        <h1 className="text-3xl text-foreground">Messages</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Activity chats</p>
       </div>
 
       {/* Chat List */}
@@ -67,20 +67,20 @@ export default function MessagesTab({ onOpenChat }: Props) {
         {recentChats.length === 0 ? (
           <div className="flex h-full items-center justify-center p-8 text-center">
             <div>
-              <MessageCircle size={48} className="mx-auto mb-4 text-gray-300" />
-              <h2 className="mb-2 text-xl text-gray-900">No messages yet</h2>
-              <p className="text-gray-600">
+              <MessageCircle size={48} className="mx-auto mb-4 text-muted-foreground" />
+              <h2 className="mb-2 text-xl text-foreground">No messages yet</h2>
+              <p className="text-muted-foreground">
                 Join activities to start chatting with others
               </p>
             </div>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-border">
             {recentChats.map((chat) => (
               <button
                 key={chat.activityId}
                 onClick={() => onOpenChat(chat.activityId, chat.activityName, chat.spotName)}
-                className="flex w-full items-center gap-4 p-4 text-left transition-all hover:bg-gray-50 active:bg-gray-100"
+                className="flex w-full items-center gap-4 p-4 text-left transition-all hover:bg-muted/50 active:bg-muted"
               >
                 {/* Activity Photo */}
                 <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl">
@@ -90,7 +90,7 @@ export default function MessagesTab({ onOpenChat }: Props) {
                     className="h-full w-full object-cover"
                   />
                   {chat.unreadCount > 0 && (
-                    <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
+                    <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white">
                       {chat.unreadCount}
                     </div>
                   )}
@@ -98,17 +98,17 @@ export default function MessagesTab({ onOpenChat }: Props) {
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <h3 className={`mb-0.5 truncate ${chat.unreadCount > 0 ? 'text-gray-900' : 'text-gray-900'}`}>
+                  <h3 className={`mb-0.5 truncate ${chat.unreadCount > 0 ? 'text-foreground font-semibold' : 'text-foreground'}`}>
                     {chat.activityName}
                   </h3>
-                  <p className="mb-1 text-xs text-gray-500 truncate">{chat.spotName}</p>
-                  <p className={`text-sm truncate ${chat.unreadCount > 0 ? 'text-gray-900' : 'text-gray-600'}`}>
+                  <p className="mb-1 text-xs text-muted-foreground truncate">{chat.spotName}</p>
+                  <p className={`text-sm truncate ${chat.unreadCount > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
                     {chat.lastMessage}
                   </p>
                 </div>
 
                 {/* Time */}
-                <div className="flex-shrink-0 text-xs text-gray-500">
+                <div className="flex-shrink-0 text-xs text-muted-foreground">
                   {chat.time}
                 </div>
               </button>
