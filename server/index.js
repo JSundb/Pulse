@@ -3,7 +3,7 @@ const cors = require('cors');
 const { activities, themes, users, userProfiles, messages, savedActivities, getRelativeTime } = require('./mockData');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 app.use(cors());
 app.use(express.json());
@@ -262,6 +262,77 @@ app.get('/api/search', async (req, res) => {
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Root route - API documentation
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Pulse API Server</title>
+      <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        h1 { color: #3b82f6; }
+        .endpoint { background: #f3f4f6; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .method { color: #10b981; font-weight: bold; }
+        a { color: #3b82f6; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .stats { background: #dbeafe; padding: 15px; border-radius: 8px; margin: 20px 0; }
+      </style>
+    </head>
+    <body>
+      <h1>🚀 Pulse Mock API Server</h1>
+      <p>Server is running! Use these endpoints:</p>
+      
+      <div class="stats">
+        <strong>📊 Available Data:</strong><br>
+        • ${activities.length} activities<br>
+        • ${themes.length} themes<br>
+        • ${userProfiles.length} user profiles<br>
+        • ${messages.length} activity chats
+      </div>
+
+      <h2>📡 API Endpoints</h2>
+      
+      <div class="endpoint">
+        <span class="method">GET</span> <a href="/api/health">/api/health</a> - Server health check
+      </div>
+      
+      <div class="endpoint">
+        <span class="method">GET</span> <a href="/api/activities">/api/activities</a> - Get all activities
+      </div>
+      
+      <div class="endpoint">
+        <span class="method">GET</span> <a href="/api/activities/1">/api/activities/:id</a> - Get single activity
+      </div>
+      
+      <div class="endpoint">
+        <span class="method">GET</span> <a href="/api/themes">/api/themes</a> - Get all themes
+      </div>
+      
+      <div class="endpoint">
+        <span class="method">GET</span> <a href="/api/themes/nature/activities">/api/themes/:id/activities</a> - Get activities by theme
+      </div>
+      
+      <div class="endpoint">
+        <span class="method">GET</span> <a href="/api/users">/api/users</a> - Get all user profiles
+      </div>
+      
+      <div class="endpoint">
+        <span class="method">GET</span> <a href="/api/saved">/api/saved</a> - Get saved activities
+      </div>
+      
+      <div class="endpoint">
+        <span class="method">GET</span> <a href="/api/search?q=coffee">/api/search?q=query</a> - Search activities
+      </div>
+
+      <p style="margin-top: 30px; color: #6b7280;">
+        💡 <strong>Tip:</strong> Start your React app with <code>npm run dev</code> to see the full UI
+      </p>
+    </body>
+    </html>
+  `);
 });
 
 app.listen(PORT, () => {

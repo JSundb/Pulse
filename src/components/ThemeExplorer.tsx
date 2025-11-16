@@ -7,15 +7,18 @@ type Theme = {
   shortDescription: string;
   image: string;
   gradient: string;
+  activityCount?: number;
 };
 
 type Props = {
+  themes?: Theme[];
   onSelectTheme: (themeId: string) => void;
   onOpenSearch?: () => void;
 };
 
-export default function ThemeExplorer({ onSelectTheme, onOpenSearch }: Props) {
-  const themes: Theme[] = [
+export default function ThemeExplorer({ themes: apiThemes, onSelectTheme, onOpenSearch }: Props) {
+  // Fallback themes if API data not provided
+  const fallbackThemes: Theme[] = [
     {
       id: 'nature',
       name: 'Nature',
@@ -81,6 +84,9 @@ export default function ThemeExplorer({ onSelectTheme, onOpenSearch }: Props) {
     },
   ];
 
+  // Use API themes if available, otherwise use fallback
+  const themes = apiThemes && apiThemes.length > 0 ? apiThemes : fallbackThemes;
+
   return (
     <div className="flex h-full flex-col bg-background">
       {/* Header */}
@@ -124,7 +130,10 @@ export default function ThemeExplorer({ onSelectTheme, onOpenSearch }: Props) {
               {/* Content */}
               <div className="absolute inset-0 flex flex-col justify-end p-4">
                 <h3 className="mb-1 text-xl text-white">{theme.name}</h3>
-                <p className="text-sm text-white/90">{theme.shortDescription}</p>
+                <p className="text-sm text-white/90">
+                  {theme.shortDescription}
+                  {theme.activityCount && ` • ${theme.activityCount} activities`}
+                </p>
               </div>
             </button>
           ))}
