@@ -113,9 +113,9 @@ export default function OnboardingSimple({ onComplete }: Props) {
           
           <button
             onClick={() => onComplete(selectedInterests)}
-            className="w-full rounded-2xl bg-white/50 px-8 py-4 text-gray-600 transition-all hover:bg-white/80 active:scale-98"
+            className="w-full rounded-2xl bg-gray-200 px-4 py-4 text-gray-700 transition-all hover:bg-gray-300 active:scale-98"
           >
-            Skip for now
+            Maybe Later
           </button>
         </div>
       </div>

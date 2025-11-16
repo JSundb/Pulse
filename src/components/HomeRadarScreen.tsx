@@ -1,6 +1,9 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import type { Activity } from '../types';
 import InterestRadar from './InterestRadar';
 import ActivityCardOverlay from './ActivityCardOverlay';
-import PulseMarker from './PulseMarker';
+import RoamyMarker from './RoamyMarker';
 import roamyLogo from 'figma:asset/cf9e2e7d21e5aef70cdebd7a6fea9d952edaf6ae.png';
 
 type Props = {
@@ -31,7 +34,7 @@ export default function HomeRadarScreen({ activities, onActivitySelect, onModeCh
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="relative h-full w-full overflow-hidden bg-white">
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-white/80 to-transparent px-6 pb-6 pt-12 backdrop-blur-sm">
         <div className="mx-auto max-w-md">
@@ -100,7 +103,7 @@ export default function HomeRadarScreen({ activities, onActivitySelect, onModeCh
           const y = Math.sin(angle) * radius;
 
           return (
-            <PulseMarker
+            <RoamyMarker
               key={activity.id}
               activity={activity}
               style={{
